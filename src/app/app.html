@@ -104,7 +104,7 @@
       <!-- Vertical resizer (only when code panel is open) -->
       @if (codeOpen()) {
         <div (mousedown)="startCodeResize($event)"
-             class="bd-resize-row h-px shrink-0 hover:h-1 transition-[height]"
+             class="bd-resize-row shrink-0 relative z-10 h-1 hover:h-1.5 transition-[height]"
              style="background:var(--border)"></div>
       }
       <!-- Code panel -->
