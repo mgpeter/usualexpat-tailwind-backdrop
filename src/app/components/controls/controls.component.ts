@@ -1,0 +1,129 @@
+import { Component, inject, computed, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Palette } from '../../models/types';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { AppStateService } from '../../services/app-state.service';
+import { BACKGROUNDS, BG_CATEGORIES, BG_PARAMS } from '../../models/backgrounds';
+import { SECTIONS } from '../../models/sections';
+import { BgDef, FavoriteItem } from '../../models/types';
+
+const PALETTE_PRESETS = [
+  { name: 'Teal',   p: '#14b8a6', s: '#0ea5e9', a: '#a855f7' },
+  { name: 'Sunset', p: '#f97316', s: '#ec4899', a: '#8b5cf6' },
+  { name: 'Forest', p: '#22c55e', s: '#10b981', a: '#84cc16' },
+  { name: 'Ocean',  p: '#3b82f6', s: '#06b6d4', a: '#6366f1' },
+  { name: 'Rose',   p: '#f43f5e', s: '#ec4899', a: '#f59e0b' },
+  { name: 'Mono',   p: '#71717a', s: '#a1a1aa', a: '#52525b' },
+];
+
+@Component({
+  selector: 'app-controls',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './controls.component.html',
+})
+export class ControlsComponent {
+  readonly svc = inject(AppStateService);
+
+  readonly sections = SECTIONS;
+  readonly bgCategories = BG_CATEGORIES;
+  readonly backgrounds = BACKGROUNDS;
+  readonly palettePresets = PALETTE_PRESETS;
+
+  readonly openSections = signal<Record<string, boolean>>({
+    section: true, background: true, palette: true, advanced: false, content: false, favorites: true,
+  });
+
+  readonly byCat = computed(() =>
+    BG_CATEGORIES.map(cat => ({
+      ...cat,
+      items: BACKGROUNDS.filter(b => b.category === cat.id),
+    }))
+  );
+
+  readonly params = computed(() => BG_PARAMS[this.svc.state().bgId] || []);
+
+  toggle(key: string): void {
+    this.openSections.update(s => ({ ...s, [key]: !s[key] }));
+  }
+
+  isOpen(key: string): boolean {
+    return !!this.openSections()[key];
+  }
+
+  bgRenderedStyle(bg: BgDef): Record<string, string> {
+    return bg.render(bg.defaults, this.svc.state().palette).style;
+  }
+
+  bgRenderedLayers(bg: BgDef) {
+    return bg.render(bg.defaults, this.svc.state().palette).layers;
+  }
+
+  objectEntries(obj: Record<string, string>) {
+    return Object.entries(obj);
+  }
+
+  labelFor(key: string): string {
+    return key.replace(/([A-Z])/g, ' $1').trim();
+  }
+
+  isLong(v: string): boolean {
+    return v.length > 60;
+  }
+
+  trackById(_: number, item: { id: string }) { return item.id; }
+  trackByKey(_: number, item: [string, string]) { return item[0]; }
+
+  getPaletteValue(key: string): string {
+    return this.svc.state().palette[key as keyof Palette] ?? '';
+  }
+
+  getBgOptValue(key: string): unknown {
+    return this.svc.state().bgOpts[key];
+  }
+
+  getSliderValue(key: string, min: number): number {
+    const v = this.svc.state().bgOpts[key];
+    return typeof v === 'number' ? v : min;
+  }
+
+  getToggleValue(key: string): boolean {
+    return !!this.svc.state().bgOpts[key];
+  }
+
+  getColorOverride(key: string, fallback: string): string {
+    const v = this.svc.state().bgOpts[key];
+    return (typeof v === 'string' && v) ? v : fallback;
+  }
+
+  favoriteRenderedStyle(fav: FavoriteItem) {
+    const def = BACKGROUNDS.find(b => b.id === fav.bgId);
+    if (!def) return {};
+    return def.render(def.defaults, fav.palette).style;
+  }
+
+  favoriteRenderedLayers(fav: FavoriteItem) {
+    const def = BACKGROUNDS.find(b => b.id === fav.bgId);
+    if (!def) return undefined;
+    return def.render(def.defaults, fav.palette).layers;
+  }
+
+  favoriteName(fav: FavoriteItem): string {
+    const def = BACKGROUNDS.find(b => b.id === fav.bgId);
+    return def?.name ?? fav.bgId;
+  }
+
+  onSliderChange(key: string, event: Event): void {
+    const el = event.target as HTMLInputElement;
+    this.svc.updateBgOpt(key, parseFloat(el.value));
+  }
+
+  onColorOverride(key: string, value: string): void {
+    this.svc.updateBgOpt(key, value);
+  }
+
+  onPaletteInput(key: string, event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.svc.updatePalette(key as keyof Palette, value);
+  }
+}

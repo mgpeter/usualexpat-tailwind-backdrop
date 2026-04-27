@@ -1,0 +1,112 @@
+<div class="h-screen w-screen flex flex-col overflow-hidden" style="background:var(--bg);color:var(--fg)">
+
+  <!-- Top bar -->
+  <div class="h-12 flex items-center justify-between px-5 shrink-0"
+       style="border-bottom:1px solid var(--border);background:var(--panel)">
+    <div class="flex items-center gap-3 text-[11px] font-mono tracking-wider" style="color:var(--fg-faint)">
+      <span>EDITING</span>
+      <span style="color:var(--fg-dim)">/</span>
+      <span style="color:var(--fg-dim)">{{sectionDef.name.toUpperCase()}}</span>
+      <span style="color:var(--fg-dim)">·</span>
+      <span style="color:var(--accent)">{{bgDef.name.toUpperCase()}}</span>
+    </div>
+    <div class="flex items-center gap-3">
+
+      <!-- Viewport toggle -->
+      <div class="flex border rounded-md p-0.5" style="background:#0a0a0b;border-color:var(--border)">
+        @for (vp of [{id:'mobile',icon:'smartphone'},{id:'tablet',icon:'tablet'},{id:'desktop',icon:'monitor'}]; track vp.id) {
+          <button (click)="setViewport($any(vp.id))"
+                  class="px-2.5 py-1.5 rounded transition-colors"
+                  [style.background]="svc.state().viewport === vp.id ? '#1f1f23' : 'transparent'"
+                  [style.color]="svc.state().viewport === vp.id ? 'var(--fg)' : 'var(--fg-dim)'">
+            @if (vp.icon === 'mobile') {
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="2.5"/><path d="M12 18h.01"/>
+              </svg>
+            }
+            @if (vp.icon === 'tablet') {
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 18h.01"/>
+              </svg>
+            }
+            @if (vp.icon === 'desktop') {
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+              </svg>
+            }
+          </button>
+        }
+      </div>
+
+      <!-- Dark/Light toggle -->
+      <div class="flex border rounded-md p-0.5" style="background:#0a0a0b;border-color:var(--border)">
+        <button (click)="setDark(false)"
+                class="px-2.5 py-1.5 rounded flex items-center gap-1.5 text-[11px] font-mono transition-colors"
+                [style.background]="!svc.state().dark ? '#1f1f23' : 'transparent'"
+                [style.color]="!svc.state().dark ? 'var(--fg)' : 'var(--fg-dim)'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+          </svg>
+          Light
+        </button>
+        <button (click)="setDark(true)"
+                class="px-2.5 py-1.5 rounded flex items-center gap-1.5 text-[11px] font-mono transition-colors"
+                [style.background]="svc.state().dark ? '#1f1f23' : 'transparent'"
+                [style.color]="svc.state().dark ? 'var(--fg)' : 'var(--fg-dim)'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          Dark
+        </button>
+      </div>
+
+      <div class="h-6 w-px" style="background:var(--border)"></div>
+
+      <!-- Copy button -->
+      <button (click)="handleCopy()"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium hover:opacity-90 transition-opacity"
+              style="background:var(--accent);color:black">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        Copy code
+      </button>
+    </div>
+  </div>
+
+  <!-- Main split -->
+  <div class="flex-1 flex min-h-0">
+
+    <!-- Controls panel -->
+    <div class="shrink-0 overflow-hidden" [style.width.px]="panelWidth()" style="border-right:1px solid var(--border)">
+      <app-controls></app-controls>
+    </div>
+
+    <!-- Resizer -->
+    <div (mousedown)="startResize($event)"
+         class="bd-resize w-px shrink-0 hover:w-1 transition-[width]"
+         style="background:var(--border)"></div>
+
+    <!-- Right column: preview + code -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- Preview area -->
+      <div class="flex-1 min-h-0 relative" style="background:#050506">
+        <!-- Subtle dot grid -->
+        <div class="absolute inset-0 pointer-events-none opacity-40"
+             [style.backgroundImage]="dotPattern"
+             style="background-size:24px 24px"></div>
+        <div class="relative h-full">
+          <app-preview></app-preview>
+        </div>
+      </div>
+      <!-- Code panel -->
+      <app-code-panel (copied)="showToast()"></app-code-panel>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<app-toast [visible]="toastVisible()" [message]="toastMessage()"></app-toast>

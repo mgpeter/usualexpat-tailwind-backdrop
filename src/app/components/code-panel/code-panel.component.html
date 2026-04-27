@@ -1,0 +1,38 @@
+<div class="border-t flex flex-col transition-all shrink-0"
+     [style.height]="open() ? '38%' : '40px'"
+     style="border-color:var(--border);background:#0a0a0b">
+
+  <!-- Header -->
+  <div class="px-5 h-10 flex items-center justify-between shrink-0">
+    <button (click)="toggle()" class="flex items-center gap-2 hover:opacity-80 transition-opacity" style="color:var(--fg-dim)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+           [style.transform]="open() ? 'rotate(0deg)' : 'rotate(180deg)'" class="transition-transform">
+        <path d="m6 9 6 6 6-6"/>
+      </svg>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>
+      </svg>
+      <span class="text-[11px] font-mono tracking-wider uppercase">Output · index.html</span>
+      <span class="text-[10px] font-mono" style="color:var(--fg-faint)">{{lineCount()}} lines</span>
+    </button>
+    @if (open()) {
+      <button (click)="copy()"
+              class="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono hover:opacity-90 transition-opacity"
+              style="background:var(--accent);color:black">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        Copy code
+      </button>
+    }
+  </div>
+
+  <!-- Code content -->
+  @if (open()) {
+    <div class="flex-1 overflow-auto px-5 pb-5">
+      <pre class="bd-code whitespace-pre" style="color:var(--fg-dim)"
+           [innerHTML]="svc.highlightedHtml()"></pre>
+    </div>
+  }
+</div>

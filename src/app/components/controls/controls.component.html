@@ -1,0 +1,357 @@
+<div class="h-full flex flex-col" style="background:var(--panel);color:var(--fg)">
+
+  <!-- Brand bar -->
+  <div class="px-5 py-4 flex items-center gap-3 shrink-0" style="border-bottom:1px solid var(--border)">
+    <div class="w-7 h-7 rounded-md grid place-items-center flex-shrink-0"
+         style="background:linear-gradient(135deg,var(--accent),var(--accent-2))">
+      <!-- layers icon -->
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m12.83 2.18-9.54 4.13a1 1 0 0 0 0 1.84l9.54 4.13a1 1 0 0 0 .77 0l9.54-4.13a1 1 0 0 0 0-1.84L13.6 2.18a1 1 0 0 0-.77 0z"/>
+        <path d="m22 17-9.55 4.13a1 1 0 0 1-.77 0L2 17M22 12l-9.55 4.13a1 1 0 0 1-.77 0L2 12"/>
+      </svg>
+    </div>
+    <div class="flex-1 min-w-0">
+      <div class="text-[15px] font-semibold tracking-tight">Backdrop</div>
+      <div class="text-[10px] font-mono tracking-wider" style="color:var(--fg-faint)">v1.0 · TAILWIND GENERATOR</div>
+    </div>
+    <button (click)="svc.randomize()" class="bd-tip p-1.5 rounded-md hover:bg-[#1f1f23] transition-colors" data-tip="Randomize" style="color:var(--fg-dim)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m18 14 4 4-4 4"/><path d="m18 2 4 4-4 4"/>
+        <path d="M2 18h1.97a4 4 0 0 0 3.24-1.65l5.58-7.7A4 4 0 0 1 16.04 7H22"/>
+        <path d="M2 6h1.97a4 4 0 0 1 3.24 1.65l.79 1.09M22 18h-5.96a4 4 0 0 1-3.24-1.65l-.79-1.09"/>
+      </svg>
+    </button>
+    <button (click)="svc.toggleFavorite()"
+            class="bd-tip p-1.5 rounded-md hover:bg-[#1f1f23] transition-colors"
+            [attr.data-tip]="svc.isFavorite() ? 'Unsave' : 'Save'"
+            [style.color]="svc.isFavorite() ? 'var(--accent)' : 'var(--fg-dim)'">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" [attr.stroke]="'currentColor'"
+           [attr.fill]="svc.isFavorite() ? 'currentColor' : 'none'"
+           stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Scrollable content -->
+  <div class="flex-1 overflow-y-auto">
+
+    <!-- 01 · Section -->
+    <div style="border-bottom:1px solid var(--border)">
+      <button (click)="toggle('section')" class="w-full flex items-center justify-between px-5 py-3.5 hover:bg-[#0f0f11] transition-colors">
+        <div class="flex items-center gap-2">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+               [class.rotate-[-90deg]]="!isOpen('section')" class="transition-transform" style="color:var(--fg-faint)">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+          <span class="text-[11px] font-mono tracking-wider uppercase" style="color:var(--fg-dim)">01 · Section</span>
+          <span class="text-[10px] font-mono" style="color:var(--fg-faint)">{{sections.length}} templates</span>
+        </div>
+      </button>
+      @if (isOpen('section')) {
+        <div class="px-5 pb-5">
+          <div class="flex flex-col gap-1.5">
+            @for (s of sections; track s.id) {
+              <button (click)="svc.setSection(s.id)"
+                      class="text-left px-3 py-2.5 rounded-md text-xs flex items-center justify-between border transition-colors"
+                      [style.background]="svc.state().sectionId === s.id ? '#1a1a1d' : 'transparent'"
+                      [style.borderColor]="svc.state().sectionId === s.id ? 'var(--border-2)' : 'transparent'"
+                      [style.color]="svc.state().sectionId === s.id ? 'var(--fg)' : 'var(--fg-dim)'">
+                <span>{{s.name}}</span>
+                @if (svc.state().sectionId === s.id) {
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)">
+                    <path d="M20 6 9 17l-5-5"/>
+                  </svg>
+                }
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- 02 · Background -->
+    <div style="border-bottom:1px solid var(--border)">
+      <button (click)="toggle('background')" class="w-full flex items-center justify-between px-5 py-3.5 hover:bg-[#0f0f11] transition-colors">
+        <div class="flex items-center gap-2">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+               [class.rotate-[-90deg]]="!isOpen('background')" class="transition-transform" style="color:var(--fg-faint)">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+          <span class="text-[11px] font-mono tracking-wider uppercase" style="color:var(--fg-dim)">02 · Background</span>
+          <span class="text-[10px] font-mono" style="color:var(--fg-faint)">{{backgrounds.length}} styles</span>
+        </div>
+      </button>
+      @if (isOpen('background')) {
+        <div class="px-5 pb-5 space-y-4">
+          @for (cat of byCat(); track cat.id) {
+            <div>
+              <div class="text-[10px] font-mono mb-2 tracking-[0.15em] font-semibold" style="color:var(--fg-dim)">{{cat.label.toUpperCase()}}</div>
+              <div class="grid grid-cols-2 gap-1.5">
+                @for (bg of cat.items; track bg.id) {
+                  <button (click)="svc.setBg(bg.id)"
+                          class="relative overflow-hidden border rounded-md transition-all group"
+                          style="aspect-ratio:3/2;"
+                          [style.borderColor]="svc.state().bgId === bg.id ? 'var(--accent)' : 'var(--border)'"
+                          [style.boxShadow]="svc.state().bgId === bg.id ? '0 0 0 2px oklch(0.78 0.15 180 / 0.3)' : 'none'">
+                    <div class="absolute inset-0" [ngStyle]="bgRenderedStyle(bg)">
+                      @if (bgRenderedLayers(bg)) {
+                        <div class="absolute inset-0">
+                          @for (layer of bgRenderedLayers(bg)!; track $index) {
+                            <div [class]="layer.classes" [ngStyle]="layer.style"></div>
+                          }
+                        </div>
+                      }
+                    </div>
+                    <div class="absolute inset-x-0 bottom-0 px-1.5 py-1" style="background:linear-gradient(to top, rgba(0,0,0,.85), transparent)">
+                      <div class="text-[9px] font-mono text-white/95 truncate text-left">{{bg.name}}</div>
+                    </div>
+                    @if (svc.state().bgId === bg.id) {
+                      <div class="absolute top-1 right-1 w-3.5 h-3.5 rounded-full grid place-items-center" style="background:var(--accent)">
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M20 6 9 17l-5-5"/>
+                        </svg>
+                      </div>
+                    }
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- 03 · Palette -->
+    <div style="border-bottom:1px solid var(--border)">
+      <button (click)="toggle('palette')" class="w-full flex items-center justify-between px-5 py-3.5 hover:bg-[#0f0f11] transition-colors">
+        <div class="flex items-center gap-2">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+               [class.rotate-[-90deg]]="!isOpen('palette')" class="transition-transform" style="color:var(--fg-faint)">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+          <span class="text-[11px] font-mono tracking-wider uppercase" style="color:var(--fg-dim)">03 · Palette</span>
+        </div>
+      </button>
+      @if (isOpen('palette')) {
+        <div class="px-5 pb-5">
+          <div class="space-y-1">
+            @for (entry of [
+              {key: 'primary', label: 'Primary'},
+              {key: 'secondary', label: 'Secondary'},
+              {key: 'accent', label: 'Accent'}
+            ]; track entry.key) {
+              <div class="flex items-center justify-between gap-2 py-1">
+                <div class="text-xs" style="color:var(--fg)">{{entry.label}}</div>
+                <div class="flex items-center gap-2">
+                  <input type="text"
+                         [value]="getPaletteValue(entry.key)"
+                         (input)="onPaletteInput(entry.key, $event)"
+                         class="w-20 rounded-md px-2 py-1 text-[11px] font-mono uppercase outline-none border"
+                         style="background:#0a0a0b;border-color:var(--border-2);color:var(--fg-dim)" />
+                  <input type="color" class="bd-color"
+                         [value]="getPaletteValue(entry.key)"
+                         (input)="onPaletteInput(entry.key, $event)" />
+                </div>
+              </div>
+            }
+            <div class="h-px my-3" style="background:var(--border)"></div>
+            @for (entry of [
+              {key: 'bg', label: 'Background'},
+              {key: 'fg', label: 'Foreground'}
+            ]; track entry.key) {
+              <div class="flex items-center justify-between gap-2 py-1">
+                <div class="text-xs" style="color:var(--fg)">{{entry.label}}</div>
+                <div class="flex items-center gap-2">
+                  <input type="text"
+                         [value]="getPaletteValue(entry.key)"
+                         (input)="onPaletteInput(entry.key, $event)"
+                         class="w-20 rounded-md px-2 py-1 text-[11px] font-mono uppercase outline-none border"
+                         style="background:#0a0a0b;border-color:var(--border-2);color:var(--fg-dim)" />
+                  <input type="color" class="bd-color"
+                         [value]="getPaletteValue(entry.key)"
+                         (input)="onPaletteInput(entry.key, $event)" />
+                </div>
+              </div>
+            }
+          </div>
+          <!-- Presets -->
+          <div class="mt-4 grid grid-cols-3 gap-2">
+            @for (preset of palettePresets; track preset.name) {
+              <button (click)="svc.applyPreset(preset)"
+                      class="rounded-md border p-1.5 hover:border-[var(--border-2)] flex flex-col gap-1 group transition-colors"
+                      style="border-color:var(--border)">
+                <div class="flex gap-0.5 h-5 rounded overflow-hidden">
+                  <div class="flex-1" [style.background]="preset.p"></div>
+                  <div class="flex-1" [style.background]="preset.s"></div>
+                  <div class="flex-1" [style.background]="preset.a"></div>
+                </div>
+                <div class="text-[10px] font-mono" style="color:var(--fg-faint)">{{preset.name}}</div>
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- 04 · Advanced -->
+    @if (params().length > 0) {
+      <div style="border-bottom:1px solid var(--border)">
+        <button (click)="toggle('advanced')" class="w-full flex items-center justify-between px-5 py-3.5 hover:bg-[#0f0f11] transition-colors">
+          <div class="flex items-center gap-2">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                 [class.rotate-[-90deg]]="!isOpen('advanced')" class="transition-transform" style="color:var(--fg-faint)">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+            <span class="text-[11px] font-mono tracking-wider uppercase" style="color:var(--fg-dim)">04 · Advanced</span>
+            <span class="text-[10px] font-mono" style="color:var(--fg-faint)">{{params().length}} options</span>
+          </div>
+        </button>
+        @if (isOpen('advanced')) {
+          <div class="px-5 pb-5 space-y-4">
+            @for (p of params(); track p.key) {
+              <div>
+                @if (p.kind === 'slider') {
+                  <div class="flex items-baseline justify-between mb-2">
+                    <div class="text-[11px] font-mono tracking-wider uppercase" style="color:var(--fg-dim)">{{p.label}}</div>
+                    <div class="text-[10px] font-mono" style="color:var(--fg-faint)">
+                      {{getSliderValue(p.key, p.min!)}}{{p.suffix || ''}}
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <input type="range" class="bd-range flex-1"
+                           [min]="p.min" [max]="p.max" [step]="p.step"
+                           [value]="getSliderValue(p.key, p.min!)"
+                           (input)="onSliderChange(p.key, $event)" />
+                    <div class="text-[11px] font-mono tabular-nums w-14 text-right" style="color:var(--fg-dim)">
+                      {{getSliderValue(p.key, p.min!)}}{{p.suffix || ''}}
+                    </div>
+                  </div>
+                }
+                @if (p.kind === 'toggle') {
+                  <button (click)="svc.updateBgOpt(p.key, !getToggleValue(p.key))"
+                          class="w-full flex items-center justify-between py-1.5">
+                    <span class="text-xs" style="color:var(--fg)">{{p.label}}</span>
+                    <div class="w-8 h-[18px] rounded-full p-[2px] transition-colors"
+                         [style.background]="getToggleValue(p.key) ? 'var(--accent)' : '#2a2a30'">
+                      <div class="w-[14px] h-[14px] rounded-full bg-white transition-transform"
+                           [style.transform]="getToggleValue(p.key) ? 'translateX(14px)' : 'translateX(0)'"></div>
+                    </div>
+                  </button>
+                }
+              </div>
+            }
+            <!-- Color overrides -->
+            <div class="pt-3 space-y-1" style="border-top:1px solid var(--border)">
+              <div class="text-[11px] font-mono tracking-wider uppercase mb-2" style="color:var(--fg-dim)">Color overrides</div>
+              @for (entry of [
+                {key: 'c1', label: 'Color 1', fallback: svc.state().palette.primary},
+                {key: 'c2', label: 'Color 2', fallback: svc.state().palette.secondary},
+                {key: 'c3', label: 'Color 3', fallback: svc.state().palette.accent}
+              ]; track entry.key) {
+                <div class="flex items-center justify-between gap-2 py-1">
+                  <div class="text-xs" style="color:var(--fg)">{{entry.label}}</div>
+                  <div class="flex items-center gap-2">
+                    <input type="text"
+                           [value]="getColorOverride(entry.key, entry.fallback)"
+                           (input)="onColorOverride(entry.key, $any($event.target).value)"
+                           class="w-20 rounded-md px-2 py-1 text-[11px] font-mono uppercase outline-none border"
+                           style="background:#0a0a0b;border-color:var(--border-2);color:var(--fg-dim)" />
+                    <input type="color" class="bd-color"
+                           [value]="getColorOverride(entry.key, entry.fallback)"
+                           (input)="onColorOverride(entry.key, $any($event.target).value)" />
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- 05 · Content -->
+    <div style="border-bottom:1px solid var(--border)">
+      <button (click)="toggle('content')" class="w-full flex items-center justify-between px-5 py-3.5 hover:bg-[#0f0f11] transition-colors">
+        <div class="flex items-center gap-2">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+               [class.rotate-[-90deg]]="!isOpen('content')" class="transition-transform" style="color:var(--fg-faint)">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+          <span class="text-[11px] font-mono tracking-wider uppercase" style="color:var(--fg-dim)">05 · Content</span>
+        </div>
+      </button>
+      @if (isOpen('content')) {
+        <div class="px-5 pb-5 space-y-3">
+          @for (entry of objectEntries(svc.state().content); track entry[0]) {
+            <div>
+              <div class="text-[11px] font-mono tracking-wider uppercase mb-2" style="color:var(--fg-dim)">{{labelFor(entry[0])}}</div>
+              @if (isLong(entry[1])) {
+                <textarea rows="2"
+                          [value]="entry[1]"
+                          (input)="svc.updateContent(entry[0], $any($event.target).value)"
+                          class="w-full rounded-md px-2.5 py-2 text-xs outline-none resize-none border"
+                          style="background:#0a0a0b;border-color:var(--border-2);color:var(--fg)"></textarea>
+              } @else {
+                <input type="text"
+                       [value]="entry[1]"
+                       (input)="svc.updateContent(entry[0], $any($event.target).value)"
+                       class="w-full rounded-md px-2.5 py-1.5 text-xs outline-none border"
+                       style="background:#0a0a0b;border-color:var(--border-2);color:var(--fg)" />
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- 06 · Favorites -->
+    @if (svc.state().favorites.length > 0) {
+      <div style="border-bottom:1px solid var(--border)">
+        <button (click)="toggle('favorites')" class="w-full flex items-center justify-between px-5 py-3.5 hover:bg-[#0f0f11] transition-colors">
+          <div class="flex items-center gap-2">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                 [class.rotate-[-90deg]]="!isOpen('favorites')" class="transition-transform" style="color:var(--fg-faint)">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+            <span class="text-[11px] font-mono tracking-wider uppercase" style="color:var(--fg-dim)">06 · Favorites</span>
+            <span class="text-[10px] font-mono" style="color:var(--fg-faint)">{{svc.state().favorites.length}} saved</span>
+          </div>
+        </button>
+        @if (isOpen('favorites')) {
+          <div class="px-5 pb-5">
+            <div class="grid grid-cols-2 gap-1.5">
+              @for (fav of svc.state().favorites; track fav.id) {
+                <div class="relative group">
+                  <button (click)="svc.loadFavorite(fav)"
+                          class="relative overflow-hidden border rounded-md w-full"
+                          style="aspect-ratio:3/2;border-color:var(--border)">
+                    <div class="absolute inset-0" [ngStyle]="favoriteRenderedStyle(fav)">
+                      @if (favoriteRenderedLayers(fav)) {
+                        <div class="absolute inset-0">
+                          @for (layer of favoriteRenderedLayers(fav)!; track $index) {
+                            <div [class]="layer.classes" [ngStyle]="layer.style"></div>
+                          }
+                        </div>
+                      }
+                    </div>
+                    <div class="absolute inset-x-0 bottom-0 px-1.5 py-1" style="background:linear-gradient(to top,rgba(0,0,0,.85),transparent)">
+                      <div class="text-[9px] font-mono text-white/95 truncate text-left">{{favoriteName(fav)}}</div>
+                    </div>
+                  </button>
+                  <button (click)="svc.removeFavorite(fav.id)"
+                          class="absolute top-1 right-1 p-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                          style="background:rgba(0,0,0,.6);color:rgba(255,255,255,.8)">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 6 6 18M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>

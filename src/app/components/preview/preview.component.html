@@ -1,0 +1,38 @@
+<div class="h-full w-full overflow-auto p-6 flex items-start justify-center">
+  <div class="rounded-2xl overflow-hidden border shadow-2xl transition-all my-auto"
+       [class]="viewportClass()"
+       style="border-color:var(--border-2)">
+
+    <!-- Mock browser chrome -->
+    <div class="flex items-center gap-2 px-4 py-2.5 border-b shrink-0"
+         [style.borderColor]="'var(--border)'"
+         [style.background]="svc.state().dark ? '#0a0a0b' : '#f5f5f7'">
+      <div class="flex gap-1.5">
+        <div class="w-2.5 h-2.5 rounded-full" style="background:#ff5f57"></div>
+        <div class="w-2.5 h-2.5 rounded-full" style="background:#febc2e"></div>
+        <div class="w-2.5 h-2.5 rounded-full" style="background:#28c840"></div>
+      </div>
+      <div class="flex-1 mx-4 px-3 py-1 rounded-md text-xs font-mono"
+           [style.background]="svc.state().dark ? '#161618' : '#e7e7ea'"
+           [style.color]="svc.state().dark ? '#9b9ba3' : '#5e5e68'">
+        yourdomain.com
+      </div>
+    </div>
+
+    <!-- Section surface -->
+    <div #surface
+         (mousemove)="onMouseMove($event, surface)"
+         class="relative"
+         [ngStyle]="rendered().style">
+      @if (rendered().layers) {
+        <div class="absolute inset-0 pointer-events-none">
+          @for (layer of rendered().layers!; track $index) {
+            <div [class]="layer.classes" [ngStyle]="layer.style"></div>
+          }
+        </div>
+      }
+      <div [innerHTML]="sectionHtml()"></div>
+    </div>
+
+  </div>
+</div>
