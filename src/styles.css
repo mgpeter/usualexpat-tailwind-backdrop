@@ -155,4 +155,6 @@ pre.bd-code .tk-key { color: oklch(0.78 0.15 320); }
 .bd-tip:hover::after { opacity: 1; }
 
 .bd-resize { cursor: col-resize; }
-.bd-resize:hover, .bd-resize.dragging { background: var(--accent); }
+.bd-resize-row { cursor: row-resize; }
+.bd-resize:hover, .bd-resize.dragging,
+.bd-resize-row:hover, .bd-resize-row.dragging { background: var(--accent); }

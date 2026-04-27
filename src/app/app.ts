@@ -18,6 +18,8 @@ export class App implements OnDestroy {
   readonly svc = inject(AppStateService);
 
   panelWidth = signal(380);
+  codeHeight = signal(240);
+  codeOpen = signal(true);
   toastVisible = signal(false);
   toastMessage = signal('');
   private toastTimer?: ReturnType<typeof setTimeout>;
@@ -56,6 +58,30 @@ export class App implements OnDestroy {
     };
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
+  }
+
+  startCodeResize(e: MouseEvent): void {
+    e.preventDefault();
+    const startY = e.clientY;
+    const startH = this.codeHeight();
+    document.body.style.userSelect = 'none';
+
+    const onMove = (ev: MouseEvent) => {
+      const dy = startY - ev.clientY;
+      const max = Math.max(160, window.innerHeight - 240);
+      this.codeHeight.set(Math.max(120, Math.min(max, startH + dy)));
+    };
+    const onUp = () => {
+      document.body.style.userSelect = '';
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }
+
+  toggleCode(): void {
+    this.codeOpen.update(v => !v);
   }
 
   setViewport(v: 'mobile' | 'tablet' | 'desktop'): void {

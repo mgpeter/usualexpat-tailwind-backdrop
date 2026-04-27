@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, output } from '@angular/core';
+import { Component, inject, computed, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AppStateService } from '../../services/app-state.service';
 
@@ -10,13 +10,15 @@ import { AppStateService } from '../../services/app-state.service';
 })
 export class CodePanelComponent {
   readonly svc = inject(AppStateService);
-  readonly open = signal(true);
+  readonly open = input<boolean>(true);
+  readonly height = input<number>(240);
+  readonly toggled = output<void>();
   readonly copied = output<void>();
 
   readonly lineCount = computed(() => this.svc.html().split('\n').length);
 
   toggle(): void {
-    this.open.update(v => !v);
+    this.toggled.emit();
   }
 
   async copy(): Promise<void> {

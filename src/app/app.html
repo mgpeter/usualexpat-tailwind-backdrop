@@ -101,8 +101,18 @@
           <app-preview></app-preview>
         </div>
       </div>
+      <!-- Vertical resizer (only when code panel is open) -->
+      @if (codeOpen()) {
+        <div (mousedown)="startCodeResize($event)"
+             class="bd-resize-row h-px shrink-0 hover:h-1 transition-[height]"
+             style="background:var(--border)"></div>
+      }
       <!-- Code panel -->
-      <app-code-panel (copied)="showToast()"></app-code-panel>
+      <app-code-panel
+        [open]="codeOpen()"
+        [height]="codeHeight()"
+        (toggled)="toggleCode()"
+        (copied)="showToast()"></app-code-panel>
     </div>
   </div>
 
