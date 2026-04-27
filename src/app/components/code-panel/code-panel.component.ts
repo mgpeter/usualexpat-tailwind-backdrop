@@ -7,6 +7,10 @@ import { AppStateService } from '../../services/app-state.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './code-panel.component.html',
+  styles: [`:host { display: block; flex-shrink: 0; }`],
+  host: {
+    '[style.height.px]': 'open() ? height() : 40',
+  },
 })
 export class CodePanelComponent {
   readonly svc = inject(AppStateService);

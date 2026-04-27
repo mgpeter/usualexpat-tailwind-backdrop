@@ -8,6 +8,7 @@ import { AppStateService } from '../../services/app-state.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './preview.component.html',
+  styles: [`:host { display: block; height: 100%; }`],
 })
 export class PreviewComponent {
   readonly svc = inject(AppStateService);
