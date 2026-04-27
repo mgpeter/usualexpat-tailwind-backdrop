@@ -2,7 +2,7 @@ import { Injectable, signal, computed } from '@angular/core';
 import { AppState, Palette, FavoriteItem, Viewport, SectionContent } from '../models/types';
 import { BACKGROUNDS } from '../models/backgrounds';
 import { SECTIONS } from '../models/sections';
-import { lsGet, lsSet, copyText, highlightHtml } from '../utils/color.utils';
+import { lsGet, lsSet, copyText } from '../utils/color.utils';
 
 const DEFAULT_PALETTE: Palette = {
   primary: '#14b8a6',
@@ -29,7 +29,7 @@ function initialState(): AppState {
   };
 }
 
-function buildOutput(state: AppState): string {
+export function buildOutput(state: AppState): string {
   const bgDef = BACKGROUNDS.find(b => b.id === state.bgId)!;
   const sectionDef = SECTIONS.find(s => s.id === state.sectionId)!;
   const bg = bgDef.generateCode(state.bgOpts, state.palette);
@@ -51,8 +51,6 @@ export class AppStateService {
 
   readonly bgDef = computed(() => BACKGROUNDS.find(b => b.id === this._state().bgId)!);
   readonly sectionDef = computed(() => SECTIONS.find(s => s.id === this._state().sectionId)!);
-  readonly html = computed(() => buildOutput(this._state()));
-  readonly highlightedHtml = computed(() => highlightHtml(this.html()));
 
   patch(update: Partial<AppState>): void {
     this._state.update(s => ({ ...s, ...update }));
@@ -142,7 +140,7 @@ export class AppStateService {
   }
 
   async copyCode(): Promise<void> {
-    await copyText(this.html());
+    await copyText(buildOutput(this._state()));
   }
 
   isFavorite(): boolean {

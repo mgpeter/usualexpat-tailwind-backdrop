@@ -1,6 +1,7 @@
 import { Component, inject, computed, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AppStateService } from '../../services/app-state.service';
+import { AppStateService, buildOutput } from '../../services/app-state.service';
+import { highlightHtml } from '../../utils/color.utils';
 
 @Component({
   selector: 'app-code-panel',
@@ -19,7 +20,9 @@ export class CodePanelComponent {
   readonly toggled = output<void>();
   readonly copied = output<void>();
 
-  readonly lineCount = computed(() => this.svc.html().split('\n').length);
+  readonly html = computed(() => buildOutput(this.svc.state()));
+  readonly highlightedHtml = computed(() => highlightHtml(this.html()));
+  readonly lineCount = computed(() => this.html().split('\n').length);
 
   toggle(): void {
     this.toggled.emit();
