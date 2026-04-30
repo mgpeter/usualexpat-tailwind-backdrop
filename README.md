@@ -1,6 +1,7 @@
 # Backdrop
 
 See it live at <a href="https://backdrop.usualexpat.com/" target="_blank">https://backdrop.usualexpat.com/</a>
+
 A Tailwind background generator and section gallery. Pick a section template, drop a background underneath it, tweak the palette and sliders until it looks right — then copy a single self-contained HTML + Tailwind snippet into your own project. No build step, no dependencies, no editing strangers' source.
 
 ![Main view: section templates on the left, a gallery of background styles, and a live preview with the generated HTML below](assets/screenshot-main.png)
