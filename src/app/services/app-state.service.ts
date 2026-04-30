@@ -2,6 +2,7 @@ import { Injectable, signal, computed } from '@angular/core';
 import { AppState, Palette, FavoriteItem, Viewport, SectionContent } from '../models/types';
 import { BACKGROUNDS } from '../models/backgrounds';
 import { SECTIONS } from '../models/sections';
+import { PALETTE_PRESETS } from '../models/palette-presets';
 import { lsGet, lsSet, copyText } from '../utils/color.utils';
 
 const DEFAULT_PALETTE: Palette = {
@@ -119,23 +120,13 @@ export class AppStateService {
   }
 
   randomize(): void {
-    const bgList = BACKGROUNDS;
-    const def = bgList[Math.floor(Math.random() * bgList.length)];
-    const toHex = (h: number): string => {
-      const div = document.createElement('div');
-      div.style.color = `oklch(0.7 0.18 ${h})`;
-      document.body.appendChild(div);
-      const rgb = getComputedStyle(div).color;
-      document.body.removeChild(div);
-      const m = rgb.match(/\d+/g)!;
-      const c = (n: number) => Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, '0');
-      return '#' + c(+m[0]) + c(+m[1]) + c(+m[2]);
-    };
-    const hues = [Math.random() * 360, Math.random() * 360, Math.random() * 360];
+    const def = BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)];
+    const preset = PALETTE_PRESETS[Math.floor(Math.random() * PALETTE_PRESETS.length)];
     this._state.update(s => ({
       ...s,
-      bgId: def.id, bgOpts: { ...def.defaults },
-      palette: { ...s.palette, primary: toHex(hues[0]), secondary: toHex(hues[1]), accent: toHex(hues[2]) },
+      bgId: def.id,
+      bgOpts: { ...def.defaults },
+      palette: { ...s.palette, primary: preset.p, secondary: preset.s, accent: preset.a },
     }));
   }
 
