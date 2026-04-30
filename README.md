@@ -1,6 +1,28 @@
 # Backdrop
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
+A Tailwind background generator and section gallery. Pick a section template, drop a background underneath it, tweak the palette and sliders until it looks right — then copy a single self-contained HTML + Tailwind snippet into your own project. No build step, no dependencies, no editing strangers' source.
+
+![Main view: section templates on the left, a gallery of background styles, and a live preview with the generated HTML below](assets/screenshot-main.png)
+
+## What you get
+
+- **Section templates** — hero, hero + signup, CTA banner, feature grid, pricing teaser. The thing your landing page actually needs.
+- **23 backgrounds** across four families:
+  - *Gradients* — linear, radial, conic, sunset, duotone split, vignette
+  - *Mesh / blob* — soft mesh, corner glow, top spotlight, center halo
+  - *Patterns* — grid, dots, diagonals, cross-hatch, checkerboard
+  - *Animated* — drifting blobs, aurora wave, grid scan, cursor spotlight, pulsing orbs, conic spin, shimmer dots, hue shift
+- **18 curated palettes** — Teal, Sunset, Forest, Ocean, Twilight, Cyber, Galaxy, Coral, and more. One click swaps every color across your section and background.
+- **Live preview** with desktop, tablet, and mobile viewports plus a light/dark toggle.
+- **Randomise** — surprise yourself with a fresh background + palette pairing.
+- **Favourites** — save combinations you like and recall them later.
+- **Copy code** — generates a clean self-contained snippet (any required `@keyframes` are inlined) ready to paste anywhere Tailwind runs.
+
+![Customisation view: palette presets, advanced sliders for blur/opacity/duration, color overrides, content fields, and the live pricing-section preview](assets/screenshot-custom-advanced.png)
+
+## Customise everything
+
+Each background exposes its own controls — blur radius, opacity, animation duration, gradient angle, pattern spacing, vignette intensity. Palette colors apply automatically, but every layer also has a **color override** in case you want to deviate from the global palette. Section content (headlines, subheads, CTA labels) is editable inline.
 
 ## Development server
 
