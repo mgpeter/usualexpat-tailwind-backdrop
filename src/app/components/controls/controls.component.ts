@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, computed, signal, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { Palette } from '../../models/types';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,14 @@ import { AppStateService } from '../../services/app-state.service';
 import { BACKGROUNDS, BG_CATEGORIES, BG_PARAMS } from '../../models/backgrounds';
 import { SECTIONS } from '../../models/sections';
 import { BgDef, FavoriteItem } from '../../models/types';
+
+const TILE_STAGE_WIDTH = 600;
+const TILE_STAGE_HEIGHT = 400;
+
+function tilePreviewStyle(style: Record<string, string>): Record<string, string> {
+  const { position, overflow, ...rest } = style;
+  return rest;
+}
 
 const PALETTE_PRESETS = [
   { name: 'Teal',   p: '#14b8a6', s: '#0ea5e9', a: '#a855f7' },
@@ -22,8 +30,9 @@ const PALETTE_PRESETS = [
   imports: [CommonModule, FormsModule],
   templateUrl: './controls.component.html',
 })
-export class ControlsComponent {
+export class ControlsComponent implements AfterViewInit, OnDestroy {
   readonly svc = inject(AppStateService);
+  private readonly host = inject(ElementRef<HTMLElement>);
 
   readonly sections = SECTIONS;
   readonly bgCategories = BG_CATEGORIES;
@@ -34,6 +43,13 @@ export class ControlsComponent {
     section: true, background: true, palette: true, advanced: false, content: false, favorites: true,
   });
 
+  readonly tileStageWidth = TILE_STAGE_WIDTH;
+  readonly tileStageHeight = TILE_STAGE_HEIGHT;
+  private readonly tileWidth = signal(135);
+  readonly tileScale = computed(() => this.tileWidth() / TILE_STAGE_WIDTH);
+
+  private resizeObserver?: ResizeObserver;
+
   readonly byCat = computed(() =>
     BG_CATEGORIES.map(cat => ({
       ...cat,
@@ -42,6 +58,22 @@ export class ControlsComponent {
   );
 
   readonly params = computed(() => BG_PARAMS[this.svc.state().bgId] || []);
+
+  ngAfterViewInit(): void {
+    const el = this.host.nativeElement as HTMLElement;
+    const measure = () => {
+      // Tiles live in a 2-column grid inside `px-5` padding (20px each side) with a 6px gap.
+      const w = el.getBoundingClientRect().width;
+      this.tileWidth.set(Math.max(40, (w - 40 - 6) / 2));
+    };
+    measure();
+    this.resizeObserver = new ResizeObserver(measure);
+    this.resizeObserver.observe(el);
+  }
+
+  ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
+  }
 
   toggle(key: string): void {
     this.openSections.update(s => ({ ...s, [key]: !s[key] }));
@@ -52,7 +84,7 @@ export class ControlsComponent {
   }
 
   bgRenderedStyle(bg: BgDef): Record<string, string> {
-    return bg.render(bg.defaults, this.svc.state().palette).style;
+    return tilePreviewStyle(bg.render(bg.defaults, this.svc.state().palette).style);
   }
 
   bgRenderedLayers(bg: BgDef) {
@@ -99,7 +131,7 @@ export class ControlsComponent {
   favoriteRenderedStyle(fav: FavoriteItem) {
     const def = BACKGROUNDS.find(b => b.id === fav.bgId);
     if (!def) return {};
-    return def.render(def.defaults, fav.palette).style;
+    return tilePreviewStyle(def.render(def.defaults, fav.palette).style);
   }
 
   favoriteRenderedLayers(fav: FavoriteItem) {

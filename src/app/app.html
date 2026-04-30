@@ -14,22 +14,22 @@
 
       <!-- Viewport toggle -->
       <div class="flex border rounded-md p-0.5" style="background:#0a0a0b;border-color:var(--border)">
-        @for (vp of [{id:'mobile',icon:'smartphone'},{id:'tablet',icon:'tablet'},{id:'desktop',icon:'monitor'}]; track vp.id) {
+        @for (vp of [{id:'mobile'},{id:'tablet'},{id:'desktop'}]; track vp.id) {
           <button (click)="setViewport($any(vp.id))"
                   class="px-2.5 py-1.5 rounded transition-colors"
                   [style.background]="svc.state().viewport === vp.id ? '#1f1f23' : 'transparent'"
                   [style.color]="svc.state().viewport === vp.id ? 'var(--fg)' : 'var(--fg-dim)'">
-            @if (vp.icon === 'mobile') {
+            @if (vp.id === 'mobile') {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="5" y="2" width="14" height="20" rx="2.5"/><path d="M12 18h.01"/>
               </svg>
             }
-            @if (vp.icon === 'tablet') {
+            @if (vp.id === 'tablet') {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 18h.01"/>
               </svg>
             }
-            @if (vp.icon === 'desktop') {
+            @if (vp.id === 'desktop') {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
               </svg>

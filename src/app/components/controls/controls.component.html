@@ -94,7 +94,11 @@
                           style="aspect-ratio:3/2;"
                           [style.borderColor]="svc.state().bgId === bg.id ? 'var(--accent)' : 'var(--border)'"
                           [style.boxShadow]="svc.state().bgId === bg.id ? '0 0 0 2px oklch(0.78 0.15 180 / 0.3)' : 'none'">
-                    <div class="absolute inset-0" [ngStyle]="bgRenderedStyle(bg)">
+                    <div class="absolute top-0 left-0 origin-top-left"
+                         [style.width.px]="tileStageWidth"
+                         [style.height.px]="tileStageHeight"
+                         [style.transform]="'scale(' + tileScale() + ')'"
+                         [ngStyle]="bgRenderedStyle(bg)">
                       @if (bgRenderedLayers(bg)) {
                         <div class="absolute inset-0">
                           @for (layer of bgRenderedLayers(bg)!; track $index) {
@@ -325,7 +329,11 @@
                   <button (click)="svc.loadFavorite(fav)"
                           class="relative overflow-hidden border rounded-md w-full"
                           style="aspect-ratio:3/2;border-color:var(--border)">
-                    <div class="absolute inset-0" [ngStyle]="favoriteRenderedStyle(fav)">
+                    <div class="absolute top-0 left-0 origin-top-left"
+                         [style.width.px]="tileStageWidth"
+                         [style.height.px]="tileStageHeight"
+                         [style.transform]="'scale(' + tileScale() + ')'"
+                         [ngStyle]="favoriteRenderedStyle(fav)">
                       @if (favoriteRenderedLayers(fav)) {
                         <div class="absolute inset-0">
                           @for (layer of favoriteRenderedLayers(fav)!; track $index) {
