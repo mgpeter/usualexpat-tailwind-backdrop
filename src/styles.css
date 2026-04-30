@@ -130,6 +130,14 @@ pre.bd-code .tk-key { color: oklch(0.78 0.15 320); }
   0%, 100% { opacity: .6; }
   50%       { opacity: 1; }
 }
+@keyframes bd-spin {
+  0%   { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes bd-hue {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50%      { filter: hue-rotate(180deg); }
+}
 
 ::selection { background: oklch(0.78 0.15 180 / 0.35); color: white; }
 

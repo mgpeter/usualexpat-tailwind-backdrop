@@ -27,6 +27,14 @@ const KF = {
   0%, 100% { opacity: .55; }
   50%      { opacity: 1; }
 }`,
+  spin: `@keyframes bd-spin {
+  0%   { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}`,
+  hue: `@keyframes bd-hue {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50%      { filter: hue-rotate(180deg); }
+}`,
 };
 
 export const BACKGROUNDS: BgDef[] = [
@@ -85,6 +93,70 @@ export const BACKGROUNDS: BgDef[] = [
       const c2 = (o['c2'] as string) || palette.secondary;
       const c3 = (o['c3'] as string) || palette.accent;
       return { wrapperStyle: `background: conic-gradient(from ${o['angle']}deg at ${o['posX']}% ${o['posY']}%, ${c1}, ${c2}, ${c3}, ${c1});` };
+    },
+  },
+  {
+    id: 'gradient-sunset',
+    name: 'Sunset glow',
+    category: 'gradient',
+    defaults: { angle: 180 },
+    render(o, palette) {
+      const a = (o['angle'] as number) ?? 180;
+      return {
+        style: {
+          background: `linear-gradient(${a}deg, ${palette.accent} 0%, ${palette.primary} 45%, ${palette.secondary} 75%, ${palette.bg} 100%)`,
+        },
+      };
+    },
+    generateCode(o, palette) {
+      const a = (o['angle'] as number) ?? 180;
+      return {
+        wrapperStyle: `background: linear-gradient(${a}deg, ${palette.accent} 0%, ${palette.primary} 45%, ${palette.secondary} 75%, ${palette.bg} 100%);`,
+      };
+    },
+  },
+  {
+    id: 'gradient-duotone',
+    name: 'Duotone split',
+    category: 'gradient',
+    defaults: { angle: 135, split: 50 },
+    render(o, palette) {
+      const a = (o['angle'] as number) ?? 135;
+      const s = (o['split'] as number) ?? 50;
+      return {
+        style: {
+          background: `linear-gradient(${a}deg, ${palette.primary} 0% ${s}%, ${palette.secondary} ${s}% 100%)`,
+        },
+      };
+    },
+    generateCode(o, palette) {
+      const a = (o['angle'] as number) ?? 135;
+      const s = (o['split'] as number) ?? 50;
+      return {
+        wrapperStyle: `background: linear-gradient(${a}deg, ${palette.primary} 0% ${s}%, ${palette.secondary} ${s}% 100%);`,
+      };
+    },
+  },
+  {
+    id: 'gradient-vignette',
+    name: 'Vignette',
+    category: 'gradient',
+    defaults: { spread: 60, intensity: 0.7 },
+    render(o, palette) {
+      const spread = (o['spread'] as number) ?? 60;
+      const intensity = (o['intensity'] as number) ?? 0.7;
+      return {
+        style: {
+          background: `radial-gradient(ellipse ${spread}% ${spread}% at 50% 50%, ${hexWithAlpha(palette.primary, intensity)}, ${palette.bg} 100%)`,
+        },
+      };
+    },
+    generateCode(o, palette) {
+      const spread = (o['spread'] as number) ?? 60;
+      const intensity = (o['intensity'] as number) ?? 0.7;
+      return {
+        wrapperStyle: `background: radial-gradient(ellipse ${spread}% ${spread}% at 50% 50%, ${hexWithAlpha(palette.primary, intensity)}, ${palette.bg} 100%);`,
+      };
     },
   },
 
@@ -167,6 +239,43 @@ export const BACKGROUNDS: BgDef[] = [
       };
     },
   },
+  {
+    id: 'mesh-halo',
+    name: 'Center halo',
+    category: 'mesh',
+    defaults: { blur: 90, intensity: 0.7, ring: true },
+    render(o, palette): BgRendered {
+      const blur = o['blur'] as number;
+      const intensity = o['intensity'] as number;
+      const ring = o['ring'] as boolean;
+      const layers: NonNullable<BgRendered['layers']> = [
+        { classes: 'absolute top-1/2 left-1/2 w-[70%] aspect-square rounded-full -translate-x-1/2 -translate-y-1/2', style: { background: `radial-gradient(circle, ${palette.primary}, transparent 70%)`, filter: `blur(${blur}px)`, opacity: String(intensity) } },
+      ];
+      if (ring) {
+        layers.push({ classes: 'absolute top-1/2 left-1/2 w-[95%] aspect-square rounded-full -translate-x-1/2 -translate-y-1/2', style: { background: `radial-gradient(circle, transparent 50%, ${palette.secondary} 65%, transparent 80%)`, filter: `blur(${blur}px)`, opacity: String(intensity * 0.55) } });
+      }
+      return {
+        style: { background: palette.bg, position: 'relative', overflow: 'hidden' },
+        layers,
+      };
+    },
+    generateCode(o, palette) {
+      const blur = o['blur'] as number;
+      const intensity = o['intensity'] as number;
+      const ring = o['ring'] as boolean;
+      const ringHtml = ring
+        ? `\n    <div class="absolute top-1/2 left-1/2 w-[95%] aspect-square rounded-full -translate-x-1/2 -translate-y-1/2" style="background:radial-gradient(circle,transparent 50%,${palette.secondary} 65%,transparent 80%);filter:blur(${blur}px);opacity:${intensity * 0.55}"></div>`
+        : '';
+      return {
+        wrapperStyle: `background: ${palette.bg};`,
+        wrapperClass: 'relative overflow-hidden',
+        layers: `
+  <div class="pointer-events-none absolute inset-0 -z-10">
+    <div class="absolute top-1/2 left-1/2 w-[70%] aspect-square rounded-full -translate-x-1/2 -translate-y-1/2" style="background:radial-gradient(circle,${palette.primary},transparent 70%);filter:blur(${blur}px);opacity:${intensity}"></div>${ringHtml}
+  </div>`,
+      };
+    },
+  },
 
   // ── PATTERNS ──
   {
@@ -244,13 +353,59 @@ export const BACKGROUNDS: BgDef[] = [
       return { wrapperStyle: `background-color: ${palette.bg}; background-image: repeating-linear-gradient(45deg, ${c} 0 1px, transparent 1px ${o['size']}px);` };
     },
   },
+  {
+    id: 'pattern-cross',
+    name: 'Cross hatch',
+    category: 'pattern',
+    defaults: { size: 14, opacity: 0.5 },
+    render(o, palette) {
+      const c = hexWithAlpha(palette.fg, 0.08 * (o['opacity'] as number));
+      return {
+        style: {
+          background: palette.bg,
+          backgroundImage: `repeating-linear-gradient(45deg, ${c} 0 1px, transparent 1px ${o['size']}px), repeating-linear-gradient(135deg, ${c} 0 1px, transparent 1px ${o['size']}px)`,
+        },
+      };
+    },
+    generateCode(o, palette) {
+      const c = hexWithAlpha(palette.fg, 0.08 * (o['opacity'] as number));
+      return {
+        wrapperStyle: `background-color: ${palette.bg}; background-image: repeating-linear-gradient(45deg, ${c} 0 1px, transparent 1px ${o['size']}px), repeating-linear-gradient(135deg, ${c} 0 1px, transparent 1px ${o['size']}px);`,
+      };
+    },
+  },
+  {
+    id: 'pattern-check',
+    name: 'Checkerboard',
+    category: 'pattern',
+    defaults: { size: 24, opacity: 0.5 },
+    render(o, palette) {
+      const c = hexWithAlpha(palette.fg, 0.08 * (o['opacity'] as number));
+      const size = o['size'] as number;
+      return {
+        style: {
+          background: palette.bg,
+          backgroundImage: `linear-gradient(45deg, ${c} 25%, transparent 25%, transparent 75%, ${c} 75%), linear-gradient(45deg, ${c} 25%, transparent 25%, transparent 75%, ${c} 75%)`,
+          backgroundSize: `${size * 2}px ${size * 2}px`,
+          backgroundPosition: `0 0, ${size}px ${size}px`,
+        },
+      };
+    },
+    generateCode(o, palette) {
+      const c = hexWithAlpha(palette.fg, 0.08 * (o['opacity'] as number));
+      const size = o['size'] as number;
+      return {
+        wrapperStyle: `background-color: ${palette.bg}; background-image: linear-gradient(45deg, ${c} 25%, transparent 25%, transparent 75%, ${c} 75%), linear-gradient(45deg, ${c} 25%, transparent 25%, transparent 75%, ${c} 75%); background-size: ${size * 2}px ${size * 2}px; background-position: 0 0, ${size}px ${size}px;`,
+      };
+    },
+  },
 
   // ── ANIMATED ──
   {
     id: 'anim-blobs',
     name: 'Drifting blobs',
     category: 'animated',
-    defaults: { blur: 80, opacity: 0.65, speed: 18 },
+    defaults: { blur: 80, opacity: 0.65, speed: 14 },
     render(o, palette): BgRendered {
       const blur = o['blur'] as number;
       const op = o['opacity'] as number;
@@ -285,7 +440,7 @@ export const BACKGROUNDS: BgDef[] = [
     id: 'anim-aurora',
     name: 'Aurora wave',
     category: 'animated',
-    defaults: { speed: 14, opacity: 0.85 },
+    defaults: { speed: 10, opacity: 0.85 },
     render(o, palette) {
       return {
         style: {
@@ -307,7 +462,7 @@ export const BACKGROUNDS: BgDef[] = [
     id: 'anim-scan',
     name: 'Grid scan',
     category: 'animated',
-    defaults: { size: 32, opacity: 0.5, speed: 4 },
+    defaults: { size: 32, opacity: 0.5, speed: 3 },
     render(o, palette): BgRendered {
       const c = hexWithAlpha(palette.primary, 0.18 * (o['opacity'] as number));
       return {
@@ -374,7 +529,7 @@ export const BACKGROUNDS: BgDef[] = [
     id: 'anim-pulse-orbs',
     name: 'Pulsing orbs',
     category: 'animated',
-    defaults: { blur: 60, speed: 4 },
+    defaults: { blur: 60, speed: 3 },
     render(o, palette): BgRendered {
       const blur = o['blur'] as number;
       const speed = o['speed'] as number;
@@ -398,6 +553,93 @@ export const BACKGROUNDS: BgDef[] = [
     <div class="absolute bottom-1/4 right-1/3 w-72 h-72 rounded-full" style="background:${palette.accent};filter:blur(${blur}px);animation:bd-pulse ${speed * 1.4}s ease-in-out infinite .5s"></div>
   </div>`,
         css: KF.pulse,
+      };
+    },
+  },
+  {
+    id: 'anim-spin',
+    name: 'Conic spin',
+    category: 'animated',
+    defaults: { speed: 12, opacity: 0.85 },
+    render(o, palette): BgRendered {
+      const speed = o['speed'] as number;
+      const op = o['opacity'] as number;
+      return {
+        style: { background: palette.bg, position: 'relative', overflow: 'hidden' },
+        layers: [
+          {
+            classes: 'absolute top-1/2 left-1/2',
+            style: {
+              width: '200%',
+              height: '200%',
+              transform: 'translate(-50%, -50%)',
+              background: `conic-gradient(from 0deg at 50% 50%, ${palette.primary}, ${palette.secondary}, ${palette.accent}, ${palette.primary})`,
+              animation: `bd-spin ${speed}s linear infinite`,
+              opacity: String(op),
+            },
+          },
+        ],
+      };
+    },
+    generateCode(o, palette) {
+      const speed = o['speed'] as number;
+      const op = o['opacity'] as number;
+      return {
+        wrapperStyle: `background: ${palette.bg};`,
+        wrapperClass: 'relative overflow-hidden',
+        layers: `
+  <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+    <div class="absolute top-1/2 left-1/2" style="width:200%;height:200%;transform:translate(-50%,-50%);background:conic-gradient(from 0deg at 50% 50%,${palette.primary},${palette.secondary},${palette.accent},${palette.primary});animation:bd-spin ${speed}s linear infinite;opacity:${op}"></div>
+  </div>`,
+        css: KF.spin,
+      };
+    },
+  },
+  {
+    id: 'anim-shimmer',
+    name: 'Shimmer dots',
+    category: 'animated',
+    defaults: { size: 20, dotSize: 1.5, speed: 3, opacity: 0.8 },
+    render(o, palette) {
+      const dotColor = hexWithAlpha(palette.primary, 0.35 * (o['opacity'] as number));
+      return {
+        style: {
+          background: palette.bg,
+          backgroundImage: `radial-gradient(${dotColor} ${o['dotSize']}px, transparent ${o['dotSize']}px)`,
+          backgroundSize: `${o['size']}px ${o['size']}px`,
+          animation: `bd-pulse ${o['speed']}s ease-in-out infinite`,
+        },
+      };
+    },
+    generateCode(o, palette) {
+      const dotColor = hexWithAlpha(palette.primary, 0.35 * (o['opacity'] as number));
+      return {
+        wrapperStyle: `background-color: ${palette.bg}; background-image: radial-gradient(${dotColor} ${o['dotSize']}px, transparent ${o['dotSize']}px); background-size: ${o['size']}px ${o['size']}px; animation: bd-pulse ${o['speed']}s ease-in-out infinite;`,
+        css: KF.pulse,
+      };
+    },
+  },
+  {
+    id: 'anim-hue',
+    name: 'Hue shift',
+    category: 'animated',
+    defaults: { speed: 12, angle: 120 },
+    render(o, palette) {
+      const speed = o['speed'] as number;
+      const a = (o['angle'] as number) ?? 120;
+      return {
+        style: {
+          background: `linear-gradient(${a}deg, ${palette.primary}, ${palette.secondary}, ${palette.accent})`,
+          animation: `bd-hue ${speed}s linear infinite`,
+        },
+      };
+    },
+    generateCode(o, palette) {
+      const speed = o['speed'] as number;
+      const a = (o['angle'] as number) ?? 120;
+      return {
+        wrapperStyle: `background: linear-gradient(${a}deg, ${palette.primary}, ${palette.secondary}, ${palette.accent}); animation: bd-hue ${speed}s linear infinite;`,
+        css: KF.hue,
       };
     },
   },
@@ -448,16 +690,16 @@ export const BG_PARAMS: Record<string, BgParam[]> = {
   'anim-blobs': [
     { key: 'blur', label: 'Blur', kind: 'slider', min: 30, max: 150, step: 2, suffix: 'px' },
     { key: 'opacity', label: 'Opacity', kind: 'slider', min: 0.1, max: 1, step: 0.05 },
-    { key: 'speed', label: 'Speed', kind: 'slider', min: 6, max: 40, step: 1, suffix: 's' },
+    { key: 'speed', label: 'Duration', kind: 'slider', min: 6, max: 40, step: 1, suffix: 's' },
   ],
   'anim-aurora': [
-    { key: 'speed', label: 'Speed', kind: 'slider', min: 4, max: 30, step: 1, suffix: 's' },
+    { key: 'speed', label: 'Duration', kind: 'slider', min: 4, max: 30, step: 1, suffix: 's' },
     { key: 'opacity', label: 'Opacity', kind: 'slider', min: 0.3, max: 1, step: 0.05 },
   ],
   'anim-scan': [
     { key: 'size', label: 'Cell size', kind: 'slider', min: 16, max: 80, step: 2, suffix: 'px' },
     { key: 'opacity', label: 'Strength', kind: 'slider', min: 0.3, max: 1.5, step: 0.05 },
-    { key: 'speed', label: 'Speed', kind: 'slider', min: 1, max: 10, step: 0.5, suffix: 's' },
+    { key: 'speed', label: 'Duration', kind: 'slider', min: 1, max: 10, step: 0.5, suffix: 's' },
   ],
   'anim-spotlight': [
     { key: 'radius', label: 'Radius', kind: 'slider', min: 150, max: 700, step: 10, suffix: 'px' },
@@ -465,6 +707,44 @@ export const BG_PARAMS: Record<string, BgParam[]> = {
   ],
   'anim-pulse-orbs': [
     { key: 'blur', label: 'Blur', kind: 'slider', min: 30, max: 120, step: 2, suffix: 'px' },
-    { key: 'speed', label: 'Speed', kind: 'slider', min: 2, max: 10, step: 0.5, suffix: 's' },
+    { key: 'speed', label: 'Duration', kind: 'slider', min: 2, max: 10, step: 0.5, suffix: 's' },
+  ],
+  'gradient-sunset': [
+    { key: 'angle', label: 'Angle', kind: 'slider', min: 0, max: 360, step: 1, suffix: '°' },
+  ],
+  'gradient-duotone': [
+    { key: 'angle', label: 'Angle', kind: 'slider', min: 0, max: 360, step: 1, suffix: '°' },
+    { key: 'split', label: 'Split', kind: 'slider', min: 5, max: 95, step: 1, suffix: '%' },
+  ],
+  'gradient-vignette': [
+    { key: 'spread', label: 'Spread', kind: 'slider', min: 20, max: 120, step: 1, suffix: '%' },
+    { key: 'intensity', label: 'Intensity', kind: 'slider', min: 0.2, max: 1, step: 0.05 },
+  ],
+  'mesh-halo': [
+    { key: 'blur', label: 'Blur', kind: 'slider', min: 20, max: 200, step: 2, suffix: 'px' },
+    { key: 'intensity', label: 'Intensity', kind: 'slider', min: 0.2, max: 1, step: 0.05 },
+    { key: 'ring', label: 'Outer ring', kind: 'toggle' },
+  ],
+  'pattern-cross': [
+    { key: 'size', label: 'Spacing', kind: 'slider', min: 6, max: 40, step: 1, suffix: 'px' },
+    { key: 'opacity', label: 'Strength', kind: 'slider', min: 0.2, max: 1.5, step: 0.05 },
+  ],
+  'pattern-check': [
+    { key: 'size', label: 'Cell size', kind: 'slider', min: 8, max: 60, step: 1, suffix: 'px' },
+    { key: 'opacity', label: 'Strength', kind: 'slider', min: 0.2, max: 1.5, step: 0.05 },
+  ],
+  'anim-spin': [
+    { key: 'speed', label: 'Duration', kind: 'slider', min: 4, max: 40, step: 1, suffix: 's' },
+    { key: 'opacity', label: 'Opacity', kind: 'slider', min: 0.3, max: 1, step: 0.05 },
+  ],
+  'anim-shimmer': [
+    { key: 'size', label: 'Spacing', kind: 'slider', min: 10, max: 60, step: 1, suffix: 'px' },
+    { key: 'dotSize', label: 'Dot size', kind: 'slider', min: 0.5, max: 4, step: 0.1, suffix: 'px' },
+    { key: 'speed', label: 'Duration', kind: 'slider', min: 1, max: 10, step: 0.5, suffix: 's' },
+    { key: 'opacity', label: 'Strength', kind: 'slider', min: 0.2, max: 1.5, step: 0.05 },
+  ],
+  'anim-hue': [
+    { key: 'angle', label: 'Angle', kind: 'slider', min: 0, max: 360, step: 1, suffix: '°' },
+    { key: 'speed', label: 'Duration', kind: 'slider', min: 4, max: 30, step: 1, suffix: 's' },
   ],
 };
